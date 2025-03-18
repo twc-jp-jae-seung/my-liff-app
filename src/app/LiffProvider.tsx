@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Liff } from '@line/liff';
+import { Liff, liff as liffModule } from '@line/liff';
 
 const LiffContext = createContext<{
   liff: Liff | null;
@@ -24,27 +24,47 @@ export const LiffProvider: FC<PropsWithChildren<{ liffId: string }>> = ({
   const [liff, setLiff] = useState<Liff | null>(null);
   const [liffError, setLiffError] = useState<string | null>(null);
 
-  const initLiff = useCallback(async () => {
-    try {
-      const liffModule = await import('@line/liff');
-      const liff = liffModule.default;
-      console.log('LIFF init...');
+  // const initLiff = useCallback(async () => {
+  //   try {
+  //     const liffModule = await import('@line/liff');
+  //     const liff = liffModule.default;
+  //     console.log('LIFF init...');
 
-      await liff.init({ liffId });
+  //     await liff.init({ liffId });
 
-      console.log('LIFF init succeeded.');
-      setLiff(liff);
-    } catch (error) {
-      console.log('LIFF init failed.');
-      setLiffError((error as Error).toString());
-    }
-  }, [liffId]);
+  //     console.log('LIFF init succeeded.');
+  //     setLiff(liff);
+  //   } catch (error) {
+  //     console.log('LIFF init failed.');
+  //     setLiffError((error as Error).toString());
+  //   }
+  // }, [liffId]);
 
-  // init Liff
+  // // init Liff
+  // useEffect(() => {
+  //   console.log('LIFF init start...');
+  //   initLiff();
+  // }, [initLiff]);
+
+  // useEffect(() => {
+  //   const liff = liffModule.default;
+  //   liff.init({ liffId });
+  //   setLiff(liff);
+  // }, [liffId]);
+
   useEffect(() => {
-    console.log('LIFF init start...');
-    initLiff();
-  }, [initLiff]);
+    liffModule.init({ liffId }).then(() => {
+      setLiff(liffModule);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (liff) {
+      liff.ready.then(() => {
+        alert('LIFF is ready');
+      });
+    }
+  }, [liff]);
 
   return (
     <LiffContext.Provider

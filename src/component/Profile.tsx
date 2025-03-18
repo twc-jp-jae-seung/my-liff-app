@@ -2,7 +2,6 @@
 
 import { useLiff } from '@/app/LiffProvider';
 import { Profile as ProfileType } from '@liff/get-profile';
-
 import { useEffect, useState } from 'react';
 
 export function Profile() {
